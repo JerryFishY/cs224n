@@ -1,0 +1,7 @@
+hw2/__pycache__
+hw2/utils/__pycache__
+hw2/utils/datasets
+hw2/utils/__init__.py
+hw2/*.npy
+hw2/*pickle
+hw2/.DS_Store
