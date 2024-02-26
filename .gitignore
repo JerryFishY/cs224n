@@ -5,3 +5,6 @@ hw2/utils/__init__.py
 hw2/*.npy
 hw2/*pickle
 hw2/.DS_Store
+hw3/__pycache__
+hw3/results
+hw3/utils/__pycache__

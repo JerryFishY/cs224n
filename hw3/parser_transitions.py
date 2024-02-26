@@ -32,6 +32,10 @@ class PartialParse(object):
         ### Note: The root token should be represented with the string "ROOT"
         ### Note: If you need to use the sentence object to initialize anything, make sure to not directly 
         ###       reference the sentence object.  That is, remember to NOT modify the sentence object. 
+        
+        self.stack = ["ROOT"]
+        self.buffer = [word for word in self.sentence]
+        self.dependencies = []
 
 
         ### END YOUR CODE
@@ -51,6 +55,19 @@ class PartialParse(object):
         ###         1. Shift
         ###         2. Left Arc
         ###         3. Right Arc
+        if transition == "S":
+            self.stack.append(self.buffer.pop(0))
+        elif transition == "LA":
+            first = self.stack.pop()
+            second = self.stack.pop()
+            self.dependencies.append((first, second))
+            self.stack.append(first)
+        elif transition == "RA":
+            first = self.stack.pop()
+            second = self.stack.pop()
+            self.dependencies.append((second, first))
+            self.stack.append(second)
+
 
 
         ### END YOUR CODE
@@ -102,7 +119,21 @@ def minibatch_parse(sentences, model, batch_size):
     ###             contains references to the same objects. Thus, you should NOT use the `del` operator
     ###             to remove objects from the `unfinished_parses` list. This will free the underlying memory that
     ###             is being accessed by `partial_parses` and may cause your code to crash.
+    
+    unfinished_idx = [i for i in range(len(sentences))]
+    dependencies = [0 for i in range(len(sentences))]
+    partial_parses = [PartialParse(sentences[i]) for i in range(len(sentences))]
+    unfinished_parses = partial_parses
 
+    while len(unfinished_idx) != 0:
+        transitions = model.predict([unfinished_parses[i] for i in unfinished_idx[:batch_size]])
+        for i in range(len(transitions)):
+            unfinished_parses[unfinished_idx[i]].parse_step(transitions[i])
+            if len(unfinished_parses[unfinished_idx[i]].buffer) == 0 and len(unfinished_parses[unfinished_idx[i]].stack) == 1:
+                dependencies[unfinished_idx[i]] = unfinished_parses[unfinished_idx[i]].dependencies
+                unfinished_idx[i] = -1
+        unfinished_idx = [i for i in unfinished_idx if i != -1]
+    
 
     ### END YOUR CODE
 
