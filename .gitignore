@@ -8,3 +8,9 @@ hw2/.DS_Store
 hw3/__pycache__
 hw3/results
 hw3/utils/__pycache__
+hw4/*.bin
+hw4/__pycache__
+hw4/events*
+hw4/outputs/test_outputs.txt
+hw4/runs
+hw4/model.bin.optim
